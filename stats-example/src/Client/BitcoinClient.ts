@@ -9,12 +9,13 @@ export default class BitcoinClient {
 
     private createRequest(method : string, params : any[]) : RequestInit {
 
-        let [AUTH_HEADER_KEY, AUTH_HEADER_VALUE] : string[] = [process.env.AUTH_HEADER_KEY!, process.env.AUTH_HEADER_VALUE!];
+        let [BITCOIN_NODE_USER, BITCOIN_NODE_PASSWORD] : string[] = [process.env.BITCOIN_NODE_USER!, process.env.BITCOIN_NODE_PASSWORD!];
+        let credentials = Buffer.from(`${BITCOIN_NODE_USER}:${BITCOIN_NODE_PASSWORD}`).toString('base64');
 
         let req = {
             method : 'POST',
             headers: {
-                [AUTH_HEADER_KEY] : AUTH_HEADER_VALUE,
+                Authorization : `Basic ${credentials}`,
                 'Content-Type' : "application/json;charset=utf8"
             },
             body: JSON.stringify({
@@ -79,6 +80,129 @@ export default class BitcoinClient {
     getMempoolInfo(){
 
         let request = this.createRequest('getmempoolinfo', []);
+
+        return fetch(process.env.BITCOIN_NODE_URL!, request)
+            .then(res => res.json())
+            .then(res => res.result);
+    }
+
+
+    /**
+     * 
+     * Wallet RPC's
+     * 
+     */
+
+    createWallet(name : string){
+
+        let request = this.createRequest('createwallet', [name]);
+
+        return fetch(process.env.BITCOIN_NODE_URL!, request)
+            .then(res => res.json())
+            .then(res => {
+                console.log(res);
+                return res.result;
+            });
+
+    }
+
+    getNewAddress(){
+        let request = this.createRequest('getnewaddress', []);
+
+        return fetch(process.env.BITCOIN_NODE_URL!, request)
+            .then(res => res.json())
+            .then(res => res.result);
+    }
+
+
+    /**
+     * Directory of wallet relative to /home/bitcoin/.bitcoin/regtest/wallets within the container
+     * Regtest if the node is a regtest node.
+     * @param walletPath 
+     * @returns 
+     */
+    loadWallet(walletPath : string){
+        let request = this.createRequest('loadwallet', [walletPath]);
+
+        return fetch(process.env.BITCOIN_NODE_URL!, request)
+            .then(res => res.json())
+            .then(res => {
+                console.log(res);
+                return res.result;
+            });
+    }
+
+    unloadWallet(walletName: string){
+        let request = this.createRequest('unloadwallet', [walletName]);
+
+        return fetch(process.env.BITCOIN_NODE_URL!, request)
+            .then(res => res.json())
+            .then(res => {
+                console.log(res);
+                return res.result;
+            });
+    }
+
+    listWalletDir(){
+        let request = this.createRequest('listwalletdir', []);
+
+        return fetch(process.env.BITCOIN_NODE_URL!, request)
+            .then(res => res.json())
+            .then(res => res.result);
+    }
+
+    getBalance(args : {minConf? : string, includeWatchOnly? : boolean, avoidReuse? : boolean}){
+
+        // Filters out falsy values
+        let truthyArgs  = Object.values(args)
+            .filter(Boolean);
+
+        let request = this.createRequest('getbalance', truthyArgs);
+
+        return fetch(process.env.BITCOIN_NODE_URL!, request)
+            .then(res => res.json())
+            .then(res => res.result);
+    }
+
+    sendToAddress(args : {address : string, amount : number, comment? : string, commentTo? : string,
+        subtractFeeFromAmount? : boolean, replaceable? : boolean, confTarget? : number,
+        estimateMode? : string, avoidReuse?: boolean}){
+
+            // Filters out falsy values
+            let truthyArgs  = Object.values(args)
+                .filter(Boolean);
+
+            console.log(truthyArgs);
+
+            let request = this.createRequest('sendtoaddress', truthyArgs);
+
+            return fetch(process.env.BITCOIN_NODE_URL!, request)
+                .then(res => res.json())
+                .then(res => res.result);
+    }
+
+
+    /**
+     * Generating RPC's. Use this to mint new bitcoin
+     */
+
+
+    generateBlock({outputAddress, transactions}: {outputAddress: string, transactions: string[]}){
+
+        let request = this.createRequest('generateblock', [outputAddress, transactions]);
+
+        return fetch(process.env.BITCOIN_NODE_URL!, request)
+            .then(res => res.json())
+            .then(res => res.result);
+
+    }
+
+    /**
+     * Mining RPCs
+     */
+
+    submitBlock(blockHexEncoded : string){
+        let request = this.createRequest('submitblock', [blockHexEncoded]);
 
         return fetch(process.env.BITCOIN_NODE_URL!, request)
             .then(res => res.json())

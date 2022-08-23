@@ -1,6 +1,6 @@
 import crypto from 'crypto';
-import BitcoinClient from './Client/BitcoinClient';
-import CoinbaseClient from './Client/CoinbaseClient';
+import BitcoinClient from './client/BitcoinClient';
+import CoinbaseClient from './client/CoinbaseClient';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -30,5 +30,8 @@ export async function getMemPoolUsageInMb() : Promise<number> {
 // getMaxMemPoolSizeMb()
 //     .then(maxMemPoolMb => console.log(`Max mempool: ${maxMemPoolMb}mb`));
 
+
+
+
 getMemPoolUsageInMb()
-    .then(memPoolUsageMb => console.log(`Mempool usage: ${memPoolUsageMb}mb`))
+    .then(memPoolUsageMb => console.log(`Mempoolusage: ${memPoolUsageMb}mb`))

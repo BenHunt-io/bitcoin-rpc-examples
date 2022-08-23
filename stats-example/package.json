@@ -2,11 +2,11 @@
   "name": "stats-example",
   "version": "1.0.0",
   "description": "An example demoing blockchain stats using bitcoin rpc's.",
-  "main": "src/Mempool.ts",
+  "main": "src/Index.ts",
   "scripts": {
     "test": "jest",
     "start:build": "tsc -w",
-    "start:run": "nodemon build/Mempool.js",
+    "start:run": "nodemon build/Index.js",
     "start": "concurrently npm:start:*"
   },
   "author": "Ben Hunt",

@@ -1,6 +1,6 @@
 import crypto from 'crypto';
-import BitcoinClient from './Client/BitcoinClient';
-import CoinbaseClient from './Client/CoinbaseClient';
+import BitcoinClient from './client/BitcoinClient';
+import CoinbaseClient from './client/CoinbaseClient';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -35,3 +35,11 @@ async function findMaxFeeForLatestBlock(){
 
 // btcClient.findMaxTxSize(100_000)
 //     .then(maxTxSize => console.log(`Max Transaction Size : ${maxTxSize} Bytes`));
+
+
+/**
+ * Decide which set of examples to run by dynamically importing that file
+ */
+
+import('./Wallet')
+

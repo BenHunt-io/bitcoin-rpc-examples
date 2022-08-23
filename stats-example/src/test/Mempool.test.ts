@@ -1,4 +1,5 @@
-import {getMaxMemPoolSizeMb} from "../src/Mempool";
+import {getMaxMemPoolSizeMb} from "../Mempool";
+
 
 test("Mempool size in mb", async () => {
     let maxMemPoolMb = await getMaxMemPoolSizeMb();
