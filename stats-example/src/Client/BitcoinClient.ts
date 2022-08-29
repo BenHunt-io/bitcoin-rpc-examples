@@ -30,6 +30,19 @@ export default class BitcoinClient {
         
     }
 
+    /**
+     * General Blockchain RPC's
+     */
+
+    getBlock(blockHash: string, verbosity: number = 1){
+        let request = this.createRequest('getblock', [blockHash, verbosity]);
+
+        return fetch(BitcoinClient.BITCOIN_NODE_URL, request)
+            .then(res => res.json())
+            .then(res => res.result);
+    
+    }
+
     findMaxTxSize(blockHeight: number) : Promise<number> {
 
         let request = this.createRequest('getblockstats', [blockHeight, ['maxtxsize']]);
@@ -100,16 +113,15 @@ export default class BitcoinClient {
         return fetch(process.env.BITCOIN_NODE_URL!, request)
             .then(res => res.json())
             .then(res => {
-                console.log(res);
                 return res.result;
             });
 
     }
 
-    getNewAddress(){
+    getNewAddress(walletName : string){
         let request = this.createRequest('getnewaddress', []);
 
-        return fetch(process.env.BITCOIN_NODE_URL!, request)
+        return fetch(`${process.env.BITCOIN_NODE_URL!}/wallet/${walletName}`, request)
             .then(res => res.json())
             .then(res => res.result);
     }
@@ -151,7 +163,7 @@ export default class BitcoinClient {
             .then(res => res.result);
     }
 
-    getBalance(args : {minConf? : string, includeWatchOnly? : boolean, avoidReuse? : boolean}){
+    getBalance(walletName : string, args : {minConf? : string, includeWatchOnly? : boolean, avoidReuse? : boolean}){
 
         // Filters out falsy values
         let truthyArgs  = Object.values(args)
@@ -159,7 +171,7 @@ export default class BitcoinClient {
 
         let request = this.createRequest('getbalance', truthyArgs);
 
-        return fetch(process.env.BITCOIN_NODE_URL!, request)
+        return fetch(`${process.env.BITCOIN_NODE_URL!}/wallet/${walletName}`, request)
             .then(res => res.json())
             .then(res => res.result);
     }
@@ -177,6 +189,16 @@ export default class BitcoinClient {
             let request = this.createRequest('sendtoaddress', truthyArgs);
 
             return fetch(process.env.BITCOIN_NODE_URL!, request)
+                .then(res => res.json())
+                .then(res => res.result);
+    }
+
+    send(fromWalletName: string, {recipientAddresses, confirmationTarget=null, estimateMode=null, feeRate} : {recipientAddresses : any[], 
+        confirmationTarget : number | null, estimateMode : string | null, feeRate : number | null}){
+
+            let request = this.createRequest('send', [recipientAddresses, confirmationTarget, estimateMode, feeRate]);
+
+            return fetch(`${process.env.BITCOIN_NODE_URL!}/wallet/${fromWalletName}`, request)
                 .then(res => res.json())
                 .then(res => res.result);
     }
