@@ -50,6 +50,7 @@ test("Setup two wallets and make payment", async () => {
     let hexEncodedBlock = await btcClient.getBlock(genBlockResult.hash, 0);
 
     console.log(`Block data: ${hexEncodedBlock}`);
+    console.log(`Block hash: ${genBlockResult.hash}`);
 
     expect(tomsBalance).toBe(0.01);
 

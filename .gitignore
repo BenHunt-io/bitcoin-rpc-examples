@@ -1,4 +1,2 @@
-
-
-stats-example/node_modules
-stats-example/build
+build/
+node_modules/
